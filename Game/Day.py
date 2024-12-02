@@ -41,3 +41,4 @@ def clear(): # cant import the one from Main cause of a bug
         os.system("cls")
         return
         os.system("clear") # Hopefully works for everything else
+

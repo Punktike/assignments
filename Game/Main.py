@@ -13,16 +13,17 @@ from Day import Day
 # If using "Online-ide" enable this boolean
 # This is because it seems like Online-ide doesnt support clear() or atleast I wasnt able to make it work
 # Will just print empty lines instead of using os.system("clear")
-onlineide : bool = False
+onlineide : bool = False # Does not even matter because online-ide does not support match: case
 onlineideamount = 4 # The amount of empty lines it prints
 
 disableannoyingmessages = True # Disables some "Press enter to continue" messages
-onlyaskwhenneeded = False # Disables superpotion question if you have 100  health
+onlyaskwhenneeded = False # Disables superpotion question if you have max health
 randomnarrative = True # Gives different enemies and stories for each day. Put on false for a fixed narrative
 narrativetype = 0 # The story (0 is the assingement one)
 
 # Base stats
-hero = {
+# Should have made this be a seperate class
+hero = { 
     "name": "Hero",
     "health": 100,
     "xp": 0,
@@ -30,10 +31,14 @@ hero = {
     "skills": [],
     "MaxHealth": 100
 }
-currentday = Day(18)
+currentday = Day(19)
 maxdays = 100
 
-
+item.addtoinventory(hero, items.superpotion)
+item.addtoinventory(hero, items.superpotion)
+item.addtoinventory(hero, items.superpotion)
+item.addtoinventory(hero, items.superpotion)
+item.addtoinventory(hero, items.superpotion)
 
 # Just to learn what lambda does
 rand = lambda x,y: random.randint(x,y) 
@@ -224,7 +229,7 @@ def night():
 
 def morning():
     if items.superpotion in hero["inventory"]:
-        if onlyaskwhenneeded and hero["health"] >= 100:
+        if onlyaskwhenneeded and hero["health"] >= hero["MaxHealth"]:
             return
         if getinput("Do you want to drink a superpotion? (y/n): "):
             usepotion()
@@ -236,7 +241,7 @@ def morning():
 def usepotion():
     global hero
     item.removefrominventory(hero, items.superpotion)
-    hero["health"] = 100
+    modhp(hero, 100)
 
 def gameloop():
     global hero
@@ -266,6 +271,10 @@ def gameloop():
     currentday.increment()
     currentday.checkspecial(narrativetype, hero)
 
+    # Another death check
+    if hero["health"] <= 0 or currentday.day > maxdays and hero["xp"] <= 0:
+        gameover()
+
     if items.spellbook in hero["inventory"] and hero["xp"] >= 100:
         clear()
         print(narrative.fireball(narrativetype, hero))
@@ -279,5 +288,5 @@ def gameloop():
     options()
 
 
-startgame()
+startgame() # This single line prevents me from importing Main in any other file and I dont know how to fix
 

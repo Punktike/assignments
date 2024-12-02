@@ -1,8 +1,11 @@
 import random
 from utils import *
 from enemies import *
+import os
 
 class fight:
+
+   
 
     def dofight(hero:dict, enemytype:enemy): 
         enemydifficulty = enemytype.getdifficulty()
@@ -29,20 +32,29 @@ class fight:
             "You encountered a boss...\n"
             "You have to fight the boss 3 times in order to beat it"
               )
-        
-        # This could probably be done better
+ 
+        inbetween(hero)
         fight.dofight(hero, enemytype)
         if hero["health"] <= 0:
-            return
+            return # TODO: This isnt checked instantly, cant also use Main.gameover
+        
+        inbetween(hero)
+        
         if items.strengthpotion in hero["inventory"]:
             print("You won the fight and beat the boss")
             return
         fight.dofight(hero, enemytype)
         if hero["health"] <= 0:
             return
+        
+        inbetween(hero)
+
         fight.dofight(hero, enemytype)
         if hero["health"] <= 0:
             return
+        
+        inbetween(hero)
+
         print("You won the fight and beat the boss")
         fight.bossdrop(hero)
     
@@ -56,7 +68,47 @@ class fight:
             possible.remove(items.hppotion)
         if len(possible) == 0:
             print("The boss dropped nothing")
-        item.addtoinventory(random.choice([items.strengthpotion, items.armor, items.hppotion]))
+        item.addtoinventory(hero, random.choice([items.strengthpotion, items.armor, items.hppotion]))
+
+def inbetween(hero:dict):
+    clear()
+    pstats(hero)
+
+    if items.superpotion in hero["inventory"]:
+            if getinput("Do you want to drink a superpotion? (y/n): "):
+                usepotion(hero)
+                clear()
+                pstats(hero)
 
 
+#duplicates from Main, because of a bug which prevents me from importing Main
+def getinput(text : str):
+    selection = input(text)
+    allowed = ["y", "n"]
+    while selection.lower() not in allowed:
+        selection = input(text)
+    if selection.lower() == "y":
+        return True
+    elif selection.lower() == "n":
+        return False
+    
+def usepotion(hero : dict):
+        item.removefrominventory(hero, items.superpotion)
+        modhp(hero, 100)
 
+def modhp(dictionary, amount : int): # Ensures health doesnt go over limit
+    dictionary["health"] += amount
+    if dictionary["health"] > dictionary["MaxHealth"]:
+        dictionary["health"] = dictionary["MaxHealth"]
+
+def clear(): # cant import the one from Main cause of a bug
+
+    if os.name == "nt": # Windows
+        os.system("cls")
+        return
+        os.system("clear") # Hopefully works for everything else
+
+def pstats(hero:dict):
+    print(f"Health: {hero['health']}")
+    print(f"XP: {hero['xp']}")
+    print(mstats.getstats(hero) + "\n\n")

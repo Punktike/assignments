@@ -49,7 +49,7 @@ class spell:
             list.remove(thing)
 
 
-# This could be made better if items and spells were in their own objects
+# This could be made better if items and spells were in their own classes
 class notifyonadd:
 
     potion = 0
@@ -75,16 +75,19 @@ class notifyonadd:
                 "You found armor!\n" +
                 "It halves all damage you take."
             )
+            input("Press enter to continue")
         if thing == items.strengthpotion:
             print(
                 "You found a strength potion!\n" +
                 "It makes you be able to beat bosses in a single fight."
             )
+            input("Press enter to continue")
         if thing == items.hppotion:
             print(
                 "You found a health potion!\n" +
                 "It doubles your max hp."
             )
+            input("Press enter to continue")
     
 
 
