@@ -6,6 +6,9 @@ from utils import *
 from narrative import *
 from enemies import *
 from fight import *
+from Day import Day
+
+
 
 # If using "Online-ide" enable this boolean
 # This is because it seems like Online-ide doesnt support clear() or atleast I wasnt able to make it work
@@ -24,9 +27,10 @@ hero = {
     "health": 100,
     "xp": 0,
     "inventory": {},
-    "skills": []
+    "skills": [],
+    "MaxHealth": 100
 }
-currentday = 1
+currentday = Day(18)
 maxdays = 100
 
 
@@ -37,7 +41,6 @@ continuegame = lambda: input("Press enter to continue")
 
 
 def clear(): # Hopefully this wont give any errors
-
     if onlineide:
         # print("\033[H\033[J", end="") # Taken from the internet (This also doesnt work on "Online-ide")
         for i in range(0,onlineideamount):
@@ -106,8 +109,8 @@ def superpotion():
 
 def modhp(dictionary, amount : int): # Ensures health doesnt go over 100
     dictionary["health"] += amount
-    if dictionary["health"] > 100:
-        dictionary["health"] = 100
+    if dictionary["health"] > dictionary["MaxHealth"]:
+        dictionary["health"] = dictionary["MaxHealth"]
 
 def potion():
     global hero
@@ -144,7 +147,7 @@ def options():
     global currentday
     enemytype : enemy = narrative.enemy(narrativetype)
     enemyname = enemytype.getname()
-    print(f"As you are walking, you see a {enemyname} (difficulty {enemytype.getdifficulty()}) in front of you ")
+    print(f"As {hero['name']} is walking, they see a {enemyname} (difficulty {enemytype.getdifficulty()}) in front of them ")
     selection = getinput("Attack " + enemyname + "? (y/n): ")
     if selection == True:
         # getrandom("fight", enemytype)
@@ -154,7 +157,7 @@ def options():
             superpotion()
     elif selection == False:
         getrandom("avoid")
-    currentday+=1
+    # currentday.increment()
     gameloop()
 
 # Prints stats
@@ -169,6 +172,9 @@ def startgame():
     global hero
     global narrativetype
     hero["name"] = input("What is your hero's name? ").capitalize()
+    if hero["name"] == "":
+        hero["name"] = "Hero"
+
     if randomnarrative: narrativetype = random.randint(1,5)
     print(hero["name"]+" "+narrative.introduction(narrativetype))
     continuegame()
@@ -204,7 +210,9 @@ def resetgame():
     hero["health"] = 100
     hero["xp"] = 0
     hero["inventory"] = {}
-    currentday = 1
+    hero["skills"] = []
+    hero["MaxHealth"] = 100
+    currentday.day = 0
     notifyonadd.potion = 0
     if randomnarrative: narrativetype = random.randint(1,5)
 
@@ -236,24 +244,27 @@ def gameloop():
 
     night()
 
-    if hero["health"] <= 0 or currentday > maxdays and hero["xp"] <= 0:
+    if hero["health"] <= 0 or currentday.day > maxdays and hero["xp"] <= 0:
         gameover()
 
-    if currentday > maxdays:
+    if currentday.day > maxdays:
         wingame()
 
-    if currentday == 5:
-        clear()
-        print(narrative.spellbook(narrativetype, hero))
-        item.addtoinventory(hero, items.spellbook)
+    # if currentday.day == 5:
+    #     clear()
+    #     print(narrative.spellbook(narrativetype, hero))
+    #     item.addtoinventory(hero, items.spellbook)
 
-    if currentday == 10:
-        clear()
-        print(f"You beat day 10 with {hero['xp']} xp")
-        continuegame()
+    # if currentday == 10:
+    #     clear()
+    #     print(f"You beat day 10 with {hero['xp']} xp")
+    #     continuegame()
 
-    if currentday % 20:
-        fight.bossfight
+    # if currentday % 20:
+    #     fight.bossfight
+
+    currentday.increment()
+    currentday.checkspecial(narrativetype, hero)
 
     if items.spellbook in hero["inventory"] and hero["xp"] >= 100:
         clear()
@@ -264,7 +275,9 @@ def gameloop():
     pstats()
     # print(f"Inventory: {hero['inventory']}")
 
-    print(f"Day {currentday} of {maxdays}")
+    print(f"Day {currentday.day} of {maxdays}")
     options()
 
+
 startgame()
+

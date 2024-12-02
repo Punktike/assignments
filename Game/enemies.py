@@ -57,10 +57,10 @@ class enemies:
 
 # 6 Bosses
     phoenix = enemy("Phoenix", 5)
-    mutantbeast = enemy("Mutant Beast", 6)
-    darknecromancer = enemy("Dark Necromancer", 7)
-    hydra = enemy("Hydra", 10)
-    kraken = enemy("Kraken", 15)
+    mutantbeast = enemy("Mutant Beast", 5)
+    darknecromancer = enemy("Dark Necromancer", 5)
+    hydra = enemy("Hydra", 5)
+    kraken = enemy("Kraken", 5)
 
 
 # print(enemies.goblin.getname())

@@ -1,11 +1,15 @@
-# Contains the possible items
+# Contains the possible items (Could be in its own file and made better)
 class items:
     spellbook = "📔 Spellbook"
     superpotion = "🍼 Superpotion"
 
+    armor = "🛡 Armor"
+    hppotion = "❤️ Health Boost"
+    strengthpotion = "💪 Strength Boost"
+
     countable = [superpotion] # Items that you can have multiple of
 
-# Contains the possible spells
+# Contains the possible spells (Could be in its own file)
 class spells:
     fireball = "🔥 Fireball"
 
@@ -17,6 +21,9 @@ class item:
         # inventory = lambda: dictionary["inventory"] # Can not use lambda for this
         if thing not in dictionary["inventory"]:
             dictionary["inventory"][thing] = 1
+
+            if thing == items.hppotion:
+                dictionary["MaxHealth"] += dictionary["MaxHealth"]
             notifyonadd.notifyitem(thing)
             return
         dictionary["inventory"][thing] +=1
@@ -29,7 +36,7 @@ class item:
             del dictionary["inventory"][thing]
 
 
-# Does stuff with spells
+# Does stuff with spells 
 class spell:
     def addtoinventory(list : list, thing : spells):
         if thing not in list:
@@ -42,7 +49,7 @@ class spell:
             list.remove(thing)
 
 
-# This could probably be in the main file but I dont want to put long lines in the main file
+# This could be made better if items and spells were in their own objects
 class notifyonadd:
 
     potion = 0
@@ -63,6 +70,21 @@ class notifyonadd:
                 'You can now drink it in the morning and restore your health to 100 points.'
             ) 
             notifyonadd.potion = 1
+        if thing == items.armor:
+            print(
+                "You found armor!\n" +
+                "It halves all damage you take."
+            )
+        if thing == items.strengthpotion:
+            print(
+                "You found a strength potion!\n" +
+                "It makes you be able to beat bosses in a single fight."
+            )
+        if thing == items.hppotion:
+            print(
+                "You found a health potion!\n" +
+                "It doubles your max hp."
+            )
     
 
 
