@@ -13,6 +13,8 @@ class fight:
         xpnr = random.randint(10,25) * enemydifficulty
         if spells.fireball in hero["skills"] and enemydifficulty < 2:
             hpnr = 0
+
+        # Divides the damage if hero has fireball spell or/ and armor
         elif spells.fireball in hero["skills"] and enemydifficulty >= 2:
             hpnr = hpnr / 1.75
             if items.armor in hero['inventory']:
@@ -22,23 +24,34 @@ class fight:
         if hpnr >= 100 and hero['MaxHealth'] < 150:
             hpnr = 99
 
+        # Round the numbers to prevent them from having too many decimal places
+
+        hpnr = round(hpnr, 0)
+        xpnr = round(xpnr, 0)
+
         hero["health"] -= hpnr
         hero["xp"] += xpnr
         print(f"{hero['name']} took {hpnr} damage and got {xpnr} xp")
         input("Press enter to continue")
     
-    def bossfight(hero:dict, enemytype:enemy): # TODO: cant use superpotions in this rn, making this impossible
-        print(
+    def bossfight(hero:dict, enemytype:enemy): 
+        if items.strengthpotion not in hero["inventory"]: 
+            print(
             "You encountered a boss...\n"
             "You have to fight the boss 3 times in order to beat it"
               )
+        else:
+            print(
+            "You encountered a boss...\n"
+              )
+        input("Press enter to continue")
  
-        inbetween(hero)
+        inbetween(hero, enemytype)
         fight.dofight(hero, enemytype)
         if hero["health"] <= 0:
-            return # TODO: This isnt checked instantly, cant also use Main.gameover
+            return
         
-        inbetween(hero)
+        inbetween(hero, enemytype)
         
         if items.strengthpotion in hero["inventory"]:
             print("You won the fight and beat the boss")
@@ -47,13 +60,13 @@ class fight:
         if hero["health"] <= 0:
             return
         
-        inbetween(hero)
+        inbetween(hero, enemytype)
 
         fight.dofight(hero, enemytype)
         if hero["health"] <= 0:
             return
         
-        inbetween(hero)
+        inbetween(hero, enemytype)
 
         print("You won the fight and beat the boss")
         fight.bossdrop(hero)
@@ -70,9 +83,10 @@ class fight:
             print("The boss dropped nothing")
         item.addtoinventory(hero, random.choice([items.strengthpotion, items.armor, items.hppotion]))
 
-def inbetween(hero:dict):
+def inbetween(hero:dict, enemytype:enemy):
     clear()
     pstats(hero)
+    print("Fightning " + enemytype.getname())
 
     if items.superpotion in hero["inventory"]:
             if getinput("Do you want to drink a superpotion? (y/n): "):

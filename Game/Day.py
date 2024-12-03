@@ -14,6 +14,7 @@ class Day:
     def decrement(self):
         self.day -= 1
 
+    # Checks if the day has a special event
     def checkspecial(self, narrativetype, hero):
         print("importing day")
         match self.day:

@@ -17,12 +17,12 @@ onlineide : bool = False # Does not even matter because online-ide does not supp
 onlineideamount = 4 # The amount of empty lines it prints
 
 disableannoyingmessages = True # Disables some "Press enter to continue" messages
-onlyaskwhenneeded = False # Disables superpotion question if you have max health
+onlyaskwhenneeded = False # Disables superpotion question if you have max health, Might not work
 randomnarrative = True # Gives different enemies and stories for each day. Put on false for a fixed narrative
-narrativetype = 0 # The story (0 is the assingement one)
+narrativetype = 0 # The story (0 is the assignment one)
 
 # Base stats
-# Should have made this be a seperate class
+# Should have made this be a seperate class instead of being a dictionary
 hero = { 
     "name": "Hero",
     "health": 100,
@@ -31,20 +31,15 @@ hero = {
     "skills": [],
     "MaxHealth": 100
 }
-currentday = Day(19)
+currentday = Day(0) # The start day - 1
 maxdays = 100
-
-item.addtoinventory(hero, items.superpotion)
-item.addtoinventory(hero, items.superpotion)
-item.addtoinventory(hero, items.superpotion)
-item.addtoinventory(hero, items.superpotion)
-item.addtoinventory(hero, items.superpotion)
 
 # Just to learn what lambda does
 rand = lambda x,y: random.randint(x,y) 
 continuegame = lambda: input("Press enter to continue")
 
 
+# Should have put this in utils
 def clear(): # Hopefully this wont give any errors
     if onlineide:
         # print("\033[H\033[J", end="") # Taken from the internet (This also doesnt work on "Online-ide")
@@ -57,12 +52,10 @@ def clear(): # Hopefully this wont give any errors
         return
         os.system("clear") # Hopefully works for everything else
 
-
-number = 0 # Used to prevent recursion from doing continue message 2 times 
-def getrandom(type : str, *args): # I could split this up into multiple functions and it would be way easier to use..... 
+def getrandom(type : str, *args): 
     global hero
-    global number
 
+    # I dont use *args anymore but still gonna keep these just in case
     if len(args) > 1:
         print("Too many arguments in getrandom function") # Just incase I forget about this
 
@@ -72,51 +65,27 @@ def getrandom(type : str, *args): # I could split this up into multiple function
         else:
             print("Invalid argumenet passed in getrandom function")
 
-
-    # if type == "fight": # Should maybe make this be in a seperate class
-    #     enemydifficulty = enemytype.getdifficulty()
-    #     hpnr = rand(10,30) * enemydifficulty
-    #     xpnr = rand(10,25) * enemydifficulty
-    #     if spells.fireball in hero["skills"]:
-    #         hpnr = 0
-    #     hero["health"] -= hpnr
-    #     hero["xp"] += xpnr
-    #     print(f"{hero['name']} took {hpnr} damage and got {xpnr} xp")
-    #     if items.spellbook in hero["inventory"]:
-    #         number = 1
-    #         getrandom("superpotion")
-
     if type == "avoid":
         nr = rand(1,100)
         if nr <= 60:
-            #do something
             potion()
         else:
             print("Nothing happened")
-    
-    # if type == "superpotion":
-    #     nr = rand(1,100)
-    #     if nr <= 15:
-    #         item.addtoinventory(hero, items.superpotion)
-    # if number == 0:
-    #     continuegame()
 
-    match number:
-        case 0:
-            continuegame()
-        # case 1:
-        #     number = 0
+    continuegame()
     
 def superpotion():
     nr = rand(1,100)
     if nr <= 15:
         item.addtoinventory(hero, items.superpotion)
 
+# For modifying health
 def modhp(dictionary, amount : int): # Ensures health doesnt go over 100
     dictionary["health"] += amount
     if dictionary["health"] > dictionary["MaxHealth"]:
         dictionary["health"] = dictionary["MaxHealth"]
 
+# When you find a potion
 def potion():
     global hero
     goodpotion = True
@@ -146,7 +115,7 @@ def getinput(text : str):
         return False
 
     
-
+# Lets you choose if to attack or not
 def options(): 
     global hero
     global currentday
@@ -255,23 +224,10 @@ def gameloop():
     if currentday.day > maxdays:
         wingame()
 
-    # if currentday.day == 5:
-    #     clear()
-    #     print(narrative.spellbook(narrativetype, hero))
-    #     item.addtoinventory(hero, items.spellbook)
-
-    # if currentday == 10:
-    #     clear()
-    #     print(f"You beat day 10 with {hero['xp']} xp")
-    #     continuegame()
-
-    # if currentday % 20:
-    #     fight.bossfight
-
     currentday.increment()
     currentday.checkspecial(narrativetype, hero)
 
-    # Another death check
+    # Another death check (incase of death in checkspecial)
     if hero["health"] <= 0 or currentday.day > maxdays and hero["xp"] <= 0:
         gameover()
 
@@ -288,5 +244,5 @@ def gameloop():
     options()
 
 
-startgame() # This single line prevents me from importing Main in any other file and I dont know how to fix
+startgame() # This single line prevents me from importing Main in any other file and I dont know how to fix it
 
